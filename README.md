@@ -3,50 +3,46 @@
 Reconify adalah alat otomatisasi reconnaissance yang memudahkan pengumpulan informasi target secara menyeluruh. Proyek ini dirancang untuk melakukan:
 
 - **Passive Info-Gathering**  
-  Mengumpulkan data pasif dari target seperti:
-  - Whois, Dig, dan Host untuk domain dan IP
-  - (GeoIP untuk IP, menggunakan `curl https://ipinfo.io/{ip}/json` – saat ini dinonaktifkan)
-  - Struktur hasil disimpan secara terorganisir dalam direktori proyek
+  Mengumpulkan data pasif dari target, seperti:
+  - Whois, Dig, Host (untuk domain dan IP)
+  - GeoIP (menggunakan `curl https://ipinfo.io/{ip}/json` – saat ini dinonaktifkan)
+  - Subdomain enumeration menggunakan [Subfinder](https://github.com/projectdiscovery/subfinder)
 
 - **Active Info-Gathering**  
-  Melakukan scanning aktif, misalnya:
-  - Menggunakan [Subfinder](https://github.com/projectdiscovery/subfinder) untuk enumerasi subdomain
-  - Pengecekan HTTP/TCP untuk memastikan layanan target aktif
-  - Menjalankan tool seperti Nmap, WhatWeb, tlssled, dan lain-lain untuk mengumpulkan data detail (rencana untuk diintegrasikan)
+  Rencana untuk melakukan scanning aktif (misalnya Nmap, WhatWeb, tlssled, dll) untuk mengumpulkan data lebih detail.
 
 - **Vulnerability Scan**  
-  Menyediakan opsi untuk menjalankan berbagai tool vulnerability scan seperti Skipfish, WATOBO, Uniscan, Wapiti, XSSer, Nikto, dan lainnya.  
-  (Modul ini direncanakan untuk dikembangkan lebih lanjut agar dapat mendeteksi celah keamanan yang mungkin ada.)
+  Rencana untuk mengintegrasikan berbagai tool vulnerability scan (Skipfish, WATOBO, Uniscan, Wapiti, XSSer, Nikto, dll) untuk mendeteksi celah keamanan.
 
 - **Struktur Output Terorganisir**  
-  Hasil scanning disimpan dalam struktur direktori yang rapi berdasarkan:
+  Semua hasil scanning disimpan secara terstruktur berdasarkan:
   - Nama Proyek
   - Domain target
   - IP address (hasil resolve dari subdomain)
-  - Subdomain dengan folder untuk Active Scan dan Vulnerability Scan
+  - Subdomain (dengan folder untuk Active Scan dan Vulnerability Scan)
 
 ## Fitur
 
-- **Otomatisasi Reconnaissance**  
-  Menggabungkan pengumpulan data pasif dan aktif dalam satu alat.
-- **Output yang Terstruktur**  
-  Struktur direktori yang memudahkan analisis hasil dan pengelompokan berdasarkan domain, IP, dan subdomain.
-- **Multi-Domain Processing**  
-  Mendukung pemrosesan lebih dari satu domain secara paralel.
-- **Extensible**  
-  Mudah dikembangkan untuk mengintegrasikan tool atau teknik baru dalam active scan maupun vulnerability scan.
-- **Mode Debug/Verbose**  
-  Menampilkan log detail (misalnya pembuatan direktori, resolving subdomain, dan eksekusi perintah) dengan flag `-v`.
+- **Automated Reconnaissance**:  
+  Menggabungkan passive dan active info-gathering dalam satu alat.
+- **Organized Output**:  
+  Struktur direktori yang rapi memudahkan analisis hasil.
+- **Multi-Domain Processing**:  
+  Mendukung pemrosesan beberapa domain secara paralel.
+- **Extensible**:  
+  Mudah dikembangkan untuk mengintegrasikan tool atau teknik scanning lainnya.
+- **Mode Debug/Verbose**:  
+  Log detail pembuatan file dan direktori dapat diaktifkan dengan flag `-v`.
 
 ## Persyaratan
 
 - **Python 3.x**
-- Tools command line yang dibutuhkan:
+- Tools command line yang diperlukan:
   - `subfinder`
   - `whois`
   - `dig`
   - `host`
-  - (Opsional) `curl` untuk GeoIP (saat ini fitur GeoIP dinonaktifkan)
+  - (Opsional) `curl` untuk GeoIP (fitur saat ini dinonaktifkan)
 - Library Python:
   - `requests`
 
@@ -67,63 +63,125 @@ pip install requests
 
 2. **Jalankan Script**
 
-   Untuk menjalankan tanpa mode debug:
+   Tanpa mode debug:
 
    ```bash
-   python3 reconify.py
+   python reconify.py
    ```
 
-   Untuk menjalankan dengan mode debug (menampilkan log detail):
+   Dengan mode debug (menampilkan log detail):
 
    ```bash
-   python3 reconify.py -v
+   python reconify.py -v
    ```
 
 3. **Input yang Diperlukan**
 
    - Nama proyek
    - Jumlah domain yang akan diproses
-   - Daftar domain (misalnya, `example.com`, `target.com`, dst)
+   - Daftar domain (misalnya: `example.com`, `target.com`, dst)
 
-Hasil scanning akan disimpan dalam struktur direktori seperti berikut:
+## Struktur Direktori
+
+Setelah menjalankan script, output hasil scanning akan tersimpan dengan struktur direktori sebagai berikut:
 
 ```
-Reconify_Project/
+{project_name}/ 
+│
 ├── Credentials/
+│   ├── Usernames/
+│   ├── Passwords/
+│   ├── databases/
+│   ├── Personal-Informations/
+│   └── Emails/
+│
 ├── Global/
-├── target.com/
+│   ├── Tools/
+│   │   ├── Third-Party/
+│   │   └── Custom-Scripts/
+│   │       ├── Recon/
+│   │       └── Exploitation/
+│   └── Scripts/
+│
+├── {domain1}.com/
 │   ├── Info-Gathering/
 │   │   ├── Passive/
-│   │   │   ├── Whois-target.com.txt
-│   │   │   ├── Dig-target.com.txt
-│   │   │   └── Host-target.com.txt
-│   │   └── Active/
-│   │       └── Nmap/
-│   │           └── nmap-target.com.txt
+│   │   │   ├── Whois-{domain1}.txt
+│   │   │   ├── Dig-{domain1}.txt
+│   │   │   ├── Host-{domain1}.txt
+│   │   │   ├── DnsEnum-{domain1}.txt  *(dinonaktifkan)*
+│   │   │   ├── GeoIP-{ip-public}.txt   *(dinonaktifkan untuk domain)*
+│   │   │   └── Subfinder-{domain1}.txt
+│   │   ├── Active/
+│   │   │   ├── Nmap/
+│   │   │   │   └── nmap-{domain1}.txt
+│   │   │   ├── tlssled/
+│   │   │   │   └── [hasil scan]
+│   │   │   ├── WhatWeb-{domain1}.txt
+│   │   │   ├── JoomScan-{domain1}.txt   *(jika terdeteksi Joomla)*
+│   │   │   ├── WPScan-{domain1}.txt       *(jika terdeteksi WordPress)*
+│   │   │   ├── WAFW00F-{domain1}.txt
+│   │   │   ├── Sitemap-{domain1}.txt      *(Hakrawler)*
+│   │   │   └── LoadBalancer-{domain1}.txt *(ldb)*
+│   ├── Vulnerability-Scan/ *(rencana scan vulnerability)*
+│   │   ├── Skipfish/
+│   │   ├── WATOBO/
+│   │   ├── Uniscan/
+│   │   ├── Wapiti/
+│   │   ├── XSSer/
+│   │   ├── Nikto/
+│   │   └── Other-Scans/
 │   ├── IPs/
-│   │   ├── 192.0.2.1/
+│   │   ├── {ip-public1}/
 │   │   │   ├── Info-Gathering/
-│   │   │   │   └── Passive/
-│   │   │   │       ├── Whois-192.0.2.1.txt
-│   │   │   │       ├── Dig-192.0.2.1.txt
-│   │   │   │       └── Host-192.0.2.1.txt
+│   │   │   │   ├── Passive/
+│   │   │   │   │   ├── Whois-{ip-public}.txt
+│   │   │   │   │   ├── Dig-{ip-public}.txt
+│   │   │   │   │   ├── Host-{ip-public}.txt
+│   │   │   │   │   ├── DnsEnum-{ip-public}.txt  *(dinonaktifkan)*
+│   │   │   │   │   └── GeoIP-{ip-public}.txt       *(dinonaktifkan)*
+│   │   │   ├── Active/
+│   │   │   │   ├── WhatWeb/
+│   │   │   │   ├── LoadBalancer/
+│   │   │   │   ├── Nmap/
+│   │   │   │   │   └── nmap-{domain1}.txt
+│   │   │   │   └── LoadBalancer-{domain1}.txt *(ldb)*
 │   │   │   └── Subdomains/
-│   │   │       └── sub.target.com/
-│   │   │           ├── Active/
-│   │   │           └── Vulnerability-Scan/
-│   ├── Vulnerability-Scan/
-│   │   └── (Tool output disesuaikan)
+│   │   │       ├── {sub}.{domain1}.com/
+│   │   │       │   ├── Active/
+│   │   │       │   │   ├── WhatWeb-{sub}.{domain1}.txt
+│   │   │       │   │   ├── JoomScan-{sub}.{domain1}.txt *(jika terdeteksi Joomla)*
+│   │   │       │   │   ├── WPScan-{sub}.{domain1}.txt   *(jika terdeteksi WordPress)*
+│   │   │       │   │   ├── WAFW00F-{sub}.{domain1}.txt
+│   │   │       │   │   ├── Hakrawler-{sub}.{domain1}.txt
+│   │   │       │   ├── Vulnerability-Scan/
+│   │   │       │   │   ├── Skipfish/
+│   │   │       │   │   ├── WATOBO/
+│   │   │       │   │   ├── Uniscan/
+│   │   │       │   │   ├── Wapiti/
+│   │   │       │   │   ├── XSSer/
+│   │   │       │   │   ├── Nikto/
+│   │   │       │   │   └── Other-Scans/
+│   ├── Exploitation/
+│   │   ├── Exploits/
+│   │   └── Payloads/
+│   ├── Post-Exploitation/
+│   │   ├── Persistence/
+│   │   ├── Privilege-Escalation/
+│   │   └── Lateral-Movement/
+│   ├── Logs/
 │   └── Notes.txt
+│
 └── README.md
 ```
 
 ## Rencana Pengembangan
 
 - **Integrasi Active Recon**  
-  Menambahkan modul untuk scanning aktif seperti Nmap, WhatWeb, tlssled, dan sebagainya.
+  Menambahkan modul untuk scanning aktif (Nmap, WhatWeb, tlssled, dll).
 - **Integrasi Vulnerability Scan**  
-  Mengembangkan modul untuk menjalankan vulnerability scan menggunakan tool seperti Skipfish, WATOBO, Uniscan, Wapiti, XSSer, Nikto, dan lainnya.
-- **Reporting**  
-  Menyediakan fitur reporting atau agregasi hasil scan untuk memudahkan analisis.
-- **Pengaturan Konfigurasi**  
-  Menambahkan file konfigurasi untuk mengatur opsi-opsi scanning dan output.
+  Menyediakan modul vulnerability scan menggunakan tool seperti Skipfish, WATOBO, Uniscan, Wapiti, XSSer, Nikto, dan lainnya.
+- **Reporting & Analisis**  
+  Mengembangkan fitur reporting untuk mengagregasi hasil scan.
+- **Konfigurasi yang Lebih Fleksibel**  
+  Menambahkan opsi konfigurasi untuk mengatur parameter scanning dan output.
