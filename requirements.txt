@@ -1,0 +1,4 @@
+Click>=8.0            # CLI framework
+PyYAML>=6.0           # YAML parsing
+questionary>=1.10.0   # Interactive wizard prompts
+rich>=12.0.0          # Tampilan terminal yang menarik
