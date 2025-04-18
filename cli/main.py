@@ -1,8 +1,9 @@
 import argparse
+import sys
 from pathlib import Path
 
-from core.config import Config
-# from cli.wizard import run_wizard  # implement wizard in cli/wizard.py if preferred
+from core.config import Config, ConfigError
+from cli.wizard import run_wizard  # wizard fallback
 
 
 def parse_args():
@@ -43,41 +44,38 @@ def parse_args():
     return parser.parse_args()
 
 
-def run_wizard():
-    try:
-        import questionary
-    except ImportError:
-        raise RuntimeError("questionary is required for wizard mode")
-
-    answers = {}
-    answers['project'] = questionary.text('Project name:').ask()
-    domains = questionary.text('Domains (space separated):').ask()
-    answers['domains'] = domains.split()
-    answers['mode'] = questionary.select(
-        'Select scan mode:',
-        choices=['passive', 'light', 'standard', 'full', 'custom']
-    ).ask()
-    return argparse.Namespace(**answers)
-
-
 def main():
     args = parse_args()
 
     # Determine input source: flags > config file > wizard
-    if args.project or args.domains or args.mode:
-        config = Config(config_file=None, args=args)
-    elif args.config and Path(args.config).is_file():
-        config = Config(config_file=args.config, args=None)
-    else:
-        widget = run_wizard()
-        config = Config(config_file=None, args=widget)
+    try:
+        if args.project or args.domains or args.mode:
+            config = Config(config_file=None, args=args)
+        elif args.config and Path(args.config).is_file():
+            config = Config(config_file=args.config, args=None)
+        else:
+            wizard_args = run_wizard()
+            config = Config(config_file=None, args=wizard_args)
+    except ConfigError as e:
+        print(f"Configuration error: {e}", file=sys.stderr)
+        sys.exit(1)
+    except Exception as e:
+        print(f"Unexpected error during config parsing: {e}", file=sys.stderr)
+        sys.exit(1)
 
     cfg = config.to_dict()
 
-    # Now pass cfg into your pipeline executor
-    from core.runner import Runner
-    runner = Runner(cfg)
-    runner.execute(dry_run=args.dry_run, debug=args.debug)
+    # Execute the pipeline
+    try:
+        from core.runner import Runner
+        runner = Runner(cfg)
+        runner.execute(dry_run=args.dry_run, debug=args.debug)
+    except KeyboardInterrupt:
+        print("\nExecution interrupted by user.", file=sys.stderr)
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error during execution: {e}", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == '__main__':
