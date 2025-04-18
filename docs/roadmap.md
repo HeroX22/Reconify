@@ -1,45 +1,45 @@
 # 🛠️ **Reconify Roadmap (Python-based)**
 
 ## 📍 **Stage 1: Setup Awal**
-- [v] Inisialisasi project: struktur direktori, virtualenv, requirements.txt
-- [v] Tentukan arsitektur project (folder `core/`, `modules/`, `utils/`, `cli/`, dll)
-- [v] Tulis workflow dasar di `docs/WORKFLOW.md`
+- [x] Inisialisasi project: struktur direktori, virtualenv, requirements.txt
+- [x] Tentukan arsitektur project (folder `core/`, `modules/`, `utils/`, `cli/`, dll)
+- [x] Tulis workflow dasar di `docs/WORKFLOW.md`
 
 ---
 
 ## ⚙️ **Stage 2: Input Handler**
-- [ ] Implement parser:
-  - [ ] `--config config.yml` → baca file YAML
-  - [ ] CLI flags → argparse / click
-  - [ ] Wizard → mode interaktif CLI (pakai `InquirerPy` atau `questionary`)
+- [x] Implement parser:
+  - [x] `--config config.yml` → baca file YAML
+  - [x] CLI flags → argparse / click
+  - [x] Wizard → mode interaktif CLI (pakai `InquirerPy` atau `questionary`)
 - [ ] Validasi input user
-- [ ] Merge logic: jika config & flag keduanya aktif → flag override config
-- [ ] Simpan hasil parsing ke struktur data internal (`ctx`, `Session`, dsb)
+- [x] Merge logic: jika config & flag keduanya aktif → flag override config
+- [x] Simpan hasil parsing ke struktur data internal (`ctx`, `Session`, dsb)
 
 ---
 
 ## 🚦 **Stage 3: Mode Handler**
-- [ ] Definisikan mode `--mode`:
+- [x] Definisikan mode `--mode`:
   - `passive`: hanya tahap pasif (tanpa nmap, wpscan, dll)
   - `light`: passive + sedikit active (e.g., nmap singkat)
   - `standard`: semua recon aktif (tidak terlalu intensif)
   - `full`: recon + VA lengkap (semua tool dijalankan)
   - `custom`: jalankan berdasarkan YAML / flag pilihan user
-- [ ] Mapping setiap mode ke langkah workflow tertentu
-- [ ] Implementasi filtering langkah berdasarkan mode
+- [x] Mapping setiap mode ke langkah workflow tertentu
+- [x] Implementasi filtering langkah berdasarkan mode
 
 ---
 
 ## 🧱 **Stage 4: Directory Builder**
-- [ ] Fungsi pembuatan struktur direktori otomatis saat project dimulai
-- [ ] Folder berdasarkan domain, IP, subdomain
+- [x] Fungsi pembuatan struktur direktori otomatis saat project dimulai
+- [x] Folder berdasarkan domain, IP, subdomain
 - [ ] Pembuatan symlink untuk subdomain shared IP
-- [ ] Folder khusus untuk output tool, logs, email, report, dll
+- [x] Folder khusus untuk output tool, logs, email, report, dll
 
 ---
 
 ## 🔧 **Stage 5: Modular Workflow Executor**
-- [ ] Buat `TaskRunner` atau semacam pipeline executor
+- [x] Buat `TaskRunner` atau semacam pipeline executor
 - [ ] Pisah tiap tool ke modul Python terpisah di folder `modules/`
 - [ ] Modul mencakup: `whois`, `dig`, `nmap`, `wpscan`, dll
 - [ ] Setiap modul menerima `target`, menyimpan hasil, dan return status
