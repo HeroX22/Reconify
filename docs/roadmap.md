@@ -40,8 +40,10 @@
 
 ## 🔧 **Stage 5: Modular Workflow Executor**
 - [x] Buat `TaskRunner` atau semacam pipeline executor
-- [ ] Pisah tiap tool ke modul Python terpisah di folder `modules/`
-- [ ] Modul mencakup: `whois`, `dig`, `nmap`, `wpscan`, dll
+- [x] Pisah tiap tool ke modul Python terpisah di folder `modules/`
+- [x] Modul `recon.py` dan `scan.py` dasar
+- [x] Logging helper (`utils/logger.py`) dan file helper (`utils/file_helper.py`)
+- [ ] Tambah modul lain: `whois`, `dig`, `nmap`, `wpscan`, dll
 - [ ] Setiap modul menerima `target`, menyimpan hasil, dan return status
 - [ ] Logging per-task + error handling
 
@@ -76,7 +78,3 @@
 - [ ] Tambahkan `reconify.yml.sample`
 - [ ] Buat file LICENSE (MIT/GPL)
 - [ ] Rilis versi 1.0.0
-
----
-
-Kalau lu setuju, nanti bisa langsung kita breakdown juga jadi issue GitHub atau `tasks.yaml` buat task tracking. Mau gue bantuin juga untuk kerangka awal file Python-nya?
