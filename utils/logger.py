@@ -1,39 +1,37 @@
-from pathlib import Path
 import logging
+import sys
+from rich.logging import RichHandler
 
-logger = logging.getLogger(__name__)
-
-def ensure_dir(path):
+def get_logger(name=None, debug=False):
     """
-    Ensure that a directory exists; create it if necessary.
-
-    :param path: Path-like or string for directory.
+    Create and configure a logger instance.
+    
+    Args:
+        name: Name for the logger (defaults to root logger if None)
+        debug: If True, set log level to DEBUG, otherwise INFO
+    
+    Returns:
+        Configured logger instance
     """
-    p = Path(path)
-    try:
-        p.mkdir(parents=True, exist_ok=True)
-        logger.debug(f"Directory ensured: {p}")
-    except Exception as e:
-        logger.error(f"Failed to create directory {p}: {e}")
-        raise
-
-
-def create_symlink(target, link_name):
-    """
-    Create a symbolic link pointing to target named link_name.
-
-    :param target: Path-like or string for the existing file/directory.
-    :param link_name: Path-like or string for the symlink to create.
-    """
-    t = Path(target)
-    ln = Path(link_name)
-    try:
-        ln.parent.mkdir(parents=True, exist_ok=True)
-        if ln.exists() or ln.is_symlink():
-            logger.debug(f"Symlink already exists: {ln}")
-        else:
-            ln.symlink_to(t)
-            logger.debug(f"Symlink created: {ln} -> {t}")
-    except Exception as e:
-        logger.error(f"Failed to create symlink {ln} -> {t}: {e}")
-        raise
+    log_level = logging.DEBUG if debug else logging.INFO
+    
+    # Create logger
+    logger = logging.getLogger(name)
+    logger.setLevel(log_level)
+    
+    # Remove existing handlers if any
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
+    
+    # Create console handler with rich formatting
+    console_handler = RichHandler(rich_tracebacks=True, show_time=True)
+    console_handler.setLevel(log_level)
+    
+    # Set format
+    formatter = logging.Formatter('%(message)s')
+    console_handler.setFormatter(formatter)
+    
+    # Add handler to logger
+    logger.addHandler(console_handler)
+    
+    return logger   
